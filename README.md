@@ -33,6 +33,15 @@ La variable de entorno `PORT` se puede usar para cambiar el puerto:
 PORT=3000 mvn spring-boot:run
 ```
 
+## Docker
+
+```bash
+docker build -t vzlarate .
+docker run -p 8080:8080 -e PORT=8080 vzlarate
+```
+
+La imagen usa multi-stage build: compila con Maven + JDK 21 Alpine y ejecuta solo con JRE 21 Alpine.
+
 ## Funcionalidades
 
 - Scraping en tiempo real de las tasas USD y EUR desde [bcv.org.ve](https://www.bcv.org.ve)
