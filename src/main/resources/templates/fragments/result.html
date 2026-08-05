@@ -1,0 +1,70 @@
+<!-- Fragment: Conversion result — returned by HTMX on POST /convert -->
+
+<!-- Error state -->
+<div th:if="${error != null}" id="result-section" class="result-area">
+    <div class="result-card result-error" role="alert">
+        <span class="result-error-icon">&#x26A0;</span>
+        <p th:text="${error}"></p>
+    </div>
+    <div id="result-loading" class="htmx-indicator loading-spinner-container">
+        <div class="loading-spinner"></div>
+        <p>Calculando...</p>
+    </div>
+</div>
+
+<!-- Result state -->
+<div th:if="${result != null}" id="result-section" class="result-area">
+    <div class="result-card result-success">
+        <div class="result-main">
+            <div class="result-source">
+                <span class="result-label">De</span>
+                <span class="result-amount" th:text="${formattedAmount}">Bs. 0,00</span>
+            </div>
+            <div class="result-arrow">&#x27A1;</div>
+            <div class="result-target">
+                <span class="result-label">A</span>
+                <span class="result-amount result-highlight" th:text="${formattedResult}">$ 0.00</span>
+            </div>
+        </div>
+        <div class="result-details">
+            <span class="result-rate" th:if="${from == 'BS' && to == 'USD'}">
+                Tasa: 1 USD = Bs. <span th:text="${#numbers.formatDecimal(rates.usdRate(), 1, 'COMMA', 4, 'POINT')}">0,00</span>
+            </span>
+            <span class="result-rate" th:if="${from == 'BS' && to == 'EUR'}">
+                Tasa: 1 EUR = Bs. <span th:text="${#numbers.formatDecimal(rates.eurRate(), 1, 'COMMA', 4, 'POINT')}">0,00</span>
+            </span>
+            <span class="result-rate" th:if="${from == 'USD' && to == 'BS'}">
+                Tasa: 1 USD = Bs. <span th:text="${#numbers.formatDecimal(rates.usdRate(), 1, 'COMMA', 4, 'POINT')}">0,00</span>
+            </span>
+            <span class="result-rate" th:if="${from == 'EUR' && to == 'BS'}">
+                Tasa: 1 EUR = Bs. <span th:text="${#numbers.formatDecimal(rates.eurRate(), 1, 'COMMA', 4, 'POINT')}">0,00</span>
+            </span>
+            <span class="result-rate" th:if="${from == 'USD' && to == 'EUR'}">
+                Tasa: 1 EUR = <span th:text="${#numbers.formatDecimal(rates.eurRate() / rates.usdRate(), 1, 'POINT', 4, 'COMMA')}">0.00</span> USD
+            </span>
+            <span class="result-rate" th:if="${from == 'EUR' && to == 'USD'}">
+                Tasa: 1 EUR = <span th:text="${#numbers.formatDecimal(rates.eurRate() / rates.usdRate(), 1, 'POINT', 4, 'COMMA')}">0.00</span> USD
+            </span>
+        </div>
+    </div>
+    <div id="result-loading" class="htmx-indicator loading-spinner-container">
+        <div class="loading-spinner"></div>
+        <p>Calculando...</p>
+    </div>
+</div>
+
+<!-- Fallback: no result and no error -->
+<div th:if="${result == null && error == null}" id="result-section" class="result-area">
+    <div class="result-placeholder">
+        <svg class="placeholder-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+            <path d="M11 8v6M8 11h6"/>
+        </svg>
+        <p>El resultado de la conversión aparecerá aquí</p>
+    </div>
+    <div id="result-loading" class="htmx-indicator loading-spinner-container">
+        <div class="loading-spinner"></div>
+        <p>Calculando...</p>
+    </div>
+</div>

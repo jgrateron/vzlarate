@@ -1,0 +1,72 @@
+<!-- Fragment: Rates cards — used by HTMX to refresh -->
+<div id="rates-section" hx-get="/fragment/rates" hx-trigger="every 300s" hx-swap="outerHTML">
+
+    <!-- Update info bar -->
+    <div class="update-bar">
+        <button class="refresh-btn"
+                hx-get="/fragment/rates"
+                hx-target="#rates-section"
+                hx-swap="outerHTML"
+                hx-indicator="#refresh-spinner">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 class="refresh-icon">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M16 12h4M12 8V4M20.66 7l-2.83 2.83"/>
+            </svg>
+            <span>Actualizar tasas</span>
+        </button>
+        <div id="refresh-spinner" class="htmx-indicator mini-spinner"></div>
+        <span class="update-date" th:if="${rates != null}">
+            Fecha BCV: <strong th:text="${#temporals.format(rates.lastUpdated(), 'dd/MM/yyyy')}"></strong>
+        </span>
+    </div>
+
+    <!-- Error state -->
+    <div th:if="${error != null}" class="error-banner" role="alert">
+        <span class="error-icon">&#x26A0;</span>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- Rates cards -->
+    <div th:if="${rates != null}" class="rates-grid">
+        <!-- USD Card -->
+        <div class="rate-card rate-card-usd">
+            <div class="card-flag">&#x1F1FA;&#x1F1F8;</div>
+            <div class="card-header">
+                <h3 class="card-currency">USD</h3>
+                <span class="card-label">Dólar estadounidense</span>
+            </div>
+            <div class="card-rate">
+                <span class="rate-prefix">Bs.</span>
+                <span class="rate-value" th:text="${#numbers.formatDecimal(rates.usdRate(), 1, 'COMMA', 2, 'POINT')}">0,00</span>
+            </div>
+            <p class="card-sub">por cada dólar</p>
+        </div>
+
+        <!-- EUR Card -->
+        <div class="rate-card rate-card-eur">
+            <div class="card-flag">&#x1F1EA;&#x1F1FA;</div>
+            <div class="card-header">
+                <h3 class="card-currency">EUR</h3>
+                <span class="card-label">Euro</span>
+            </div>
+            <div class="card-rate">
+                <span class="rate-prefix">Bs.</span>
+                <span class="rate-value" th:text="${#numbers.formatDecimal(rates.eurRate(), 1, 'COMMA', 2, 'POINT')}">0,00</span>
+            </div>
+            <p class="card-sub">por cada euro</p>
+        </div>
+    </div>
+
+    <!-- No rates fallback -->
+    <div th:if="${rates == null && error == null}" class="rates-grid">
+        <div class="rate-card skeleton">
+            <div class="skeleton-line skeleton-title"></div>
+            <div class="skeleton-line skeleton-value"></div>
+        </div>
+        <div class="rate-card skeleton">
+            <div class="skeleton-line skeleton-title"></div>
+            <div class="skeleton-line skeleton-value"></div>
+        </div>
+    </div>
+</div>

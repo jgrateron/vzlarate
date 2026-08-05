@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VzlaRate — Tasas BCV y Conversor de Divisas</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%B1%3C/text%3E%3C/svg%3E">
+    <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body hx-ext="loading-states">
+
+<header class="header">
+    <div class="container header-content">
+        <div class="logo-section">
+            <span class="logo-icon">&#x1F4B1;</span>
+            <div>
+                <h1 class="logo-title">VzlaRate</h1>
+                <p class="logo-subtitle">Tasas de cambio oficiales del BCV</p>
+            </div>
+        </div>
+        <a href="https://www.bcv.org.ve/" target="_blank" rel="noopener" class="bcv-link">
+            <span class="bcv-badge">BCV</span>
+            <span class="bcv-text">Ir al sitio oficial</span>
+        </a>
+    </div>
+</header>
+
+<main class="container">
+
+    <!-- ===== ERROR BANNER ===== -->
+    <div th:if="${error != null}" class="error-banner" role="alert">
+        <span class="error-icon">&#x26A0;</span>
+        <span th:text="${error}"></span>
+    </div>
+
+    <!-- ===== RATES SECTION (HTMX target) ===== -->
+    <div id="rates-section" hx-get="/fragment/rates" hx-trigger="load delay:100ms" hx-swap="outerHTML">
+        <!-- Loading placeholder -->
+        <div class="rates-grid">
+            <div class="rate-card skeleton">
+                <div class="skeleton-line skeleton-title"></div>
+                <div class="skeleton-line skeleton-value"></div>
+            </div>
+            <div class="rate-card skeleton">
+                <div class="skeleton-line skeleton-title"></div>
+                <div class="skeleton-line skeleton-value"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CONVERTER SECTION ===== -->
+    <section class="converter-section">
+        <div class="section-header">
+            <h2 class="section-title">Convertir Divisas</h2>
+            <p class="section-desc">Ingrese el monto y seleccione las monedas para realizar la conversión</p>
+        </div>
+
+        <form id="converter-form"
+              hx-post="/convert"
+              hx-target="#result-section"
+              hx-swap="innerHTML"
+              hx-indicator="#result-loading">
+            <div class="converter-inputs">
+                <!-- Amount -->
+                <div class="input-group amount-group">
+                    <label for="amount" class="input-label">Monto</label>
+                    <input type="number"
+                           id="amount"
+                           name="amount"
+                           class="input-field"
+                           placeholder="0,00"
+                           step="any"
+                           min="0"
+                           required
+                           autofocus>
+                </div>
+
+                <!-- From -->
+                <div class="input-group currency-group">
+                    <label for="from" class="input-label">De</label>
+                    <select id="from" name="from" class="input-field select-field" required>
+                        <option value="BS">Bs. — Bolívares</option>
+                        <option value="USD">$ — Dólar USD</option>
+                        <option value="EUR">€ — Euro EUR</option>
+                    </select>
+                </div>
+
+                <!-- Swap button -->
+                <button type="button" class="swap-btn" id="swap-btn"
+                        onclick="swapCurrencies()" title="Invertir monedas"
+                        aria-label="Invertir monedas">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7 16l-4-4 4-4"/>
+                        <path d="M17 8l4 4-4 4"/>
+                        <path d="M3 12h18"/>
+                    </svg>
+                </button>
+
+                <!-- To -->
+                <div class="input-group currency-group">
+                    <label for="to" class="input-label">A</label>
+                    <select id="to" name="to" class="input-field select-field" required>
+                        <option value="USD">$ — Dólar USD</option>
+                        <option value="EUR">€ — Euro EUR</option>
+                        <option value="BS">Bs. — Bolívares</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="convert-btn">
+                <span class="btn-text">Convertir</span>
+                <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                    <path d="M11 8v6M8 11h6"/>
+                </svg>
+            </button>
+        </form>
+
+        <!-- Result area (HTMX target) -->
+        <div id="result-section" class="result-area">
+            <div id="result-placeholder" class="result-placeholder">
+                <svg class="placeholder-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                    <path d="M11 8v6M8 11h6"/>
+                </svg>
+                <p>El resultado de la conversión aparecerá aquí</p>
+            </div>
+            <!-- HTMX loading indicator -->
+            <div id="result-loading" class="htmx-indicator loading-spinner-container">
+                <div class="loading-spinner"></div>
+                <p>Calculando...</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="footer">
+    <div class="container footer-content">
+        <p>Datos obtenidos de <a href="https://www.bcv.org.ve/" target="_blank" rel="noopener">www.bcv.org.ve</a></p>
+        <p class="footer-disclaimer">Tipo de Cambio Promedio Ponderado — Art. 9 Convenio Cambiario N°1</p>
+    </div>
+</footer>
+
+<script>
+    /* Swap currencies with smooth animation */
+    function swapCurrencies() {
+        const from = document.getElementById('from');
+        const to = document.getElementById('to');
+        const swapBtn = document.getElementById('swap-btn');
+
+        // Don't swap if both are the same
+        if (from.value === to.value) return;
+
+        // Animate
+        swapBtn.classList.add('swapping');
+        setTimeout(() => swapBtn.classList.remove('swapping'), 400);
+
+        // Swap
+        const temp = from.value;
+        from.value = to.value;
+        to.value = temp;
+    }
+
+    /* Format number input with Venezuelan comma decimal */
+    document.getElementById('amount').addEventListener('input', function(e) {
+        // Allow both . and , as decimal separator
+    });
+</script>
+
+</body>
+</html>
