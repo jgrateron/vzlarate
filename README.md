@@ -35,9 +35,27 @@ PORT=3000 mvn spring-boot:run
 
 ## Docker
 
+### Construir y ejecutar local
+
 ```bash
 docker build -t vzlarate .
 docker run -p 8080:8080 -e PORT=8080 vzlarate
+```
+
+### Imagen en Docker Hub
+
+```bash
+docker pull jgrateron/vzlarate:latest
+docker run -p 8080:8080 -e PORT=8080 jgrateron/vzlarate:latest
+```
+
+### Publicar una nueva versión
+
+```bash
+docker build -t jgrateron/vzlarate:1.0.0 .
+docker tag jgrateron/vzlarate:1.0.0 jgrateron/vzlarate:latest
+docker push jgrateron/vzlarate:1.0.0
+docker push jgrateron/vzlarate:latest
 ```
 
 La imagen usa multi-stage build: compila con Maven + JDK 21 Alpine y ejecuta solo con JRE 21 Alpine.
