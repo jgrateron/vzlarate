@@ -408,44 +408,81 @@ main {
     color: var(--color-text-muted);
 }
 
-/* ----- Converter Inputs ----- */
-.converter-inputs {
+/* ----- Currency Radio Cards ----- */
+.currency-radio-group {
     display: flex;
-    align-items: flex-end;
     gap: 12px;
     margin-bottom: 20px;
 }
 
 @media (max-width: 700px) {
-    .converter-inputs {
+    .currency-radio-group {
         flex-direction: column;
-        align-items: stretch;
-    }
-
-    .swap-btn {
-        align-self: center;
-        transform: rotate(90deg);
-    }
-
-    .swap-btn.swapping {
-        transform: rotate(450deg) !important;
     }
 }
 
-.input-group {
+.currency-radio-card {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    align-items: center;
+    gap: 2px;
+    padding: 16px 12px;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    cursor: pointer;
+    user-select: none;
+    transition: all var(--transition);
 }
 
+.currency-radio-card:hover {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+}
+
+.currency-radio-card.selected {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+    box-shadow: var(--shadow-md);
+}
+
+.currency-radio-card:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+}
+
+/* Visually hidden radio, still keyboard-focusable */
+.currency-radio-card input[type="radio"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.radio-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.radio-code {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--color-text);
+}
+
+.radio-name {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+/* ----- Amount Input ----- */
 .amount-group {
-    flex: 1;
-    min-width: 130px;
-}
-
-.currency-group {
-    flex: 1;
-    min-width: 140px;
+    margin-bottom: 20px;
 }
 
 .input-label {
@@ -481,48 +518,8 @@ main {
     box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
 }
 
-.select-field {
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    padding-right: 36px;
-}
-
 input.input-field::placeholder {
     color: var(--color-text-light);
-}
-
-/* Swap button */
-.swap-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border: 2px solid var(--color-border);
-    border-radius: 50%;
-    background: var(--color-surface);
-    color: var(--color-text-muted);
-    cursor: pointer;
-    transition: all var(--transition);
-    flex-shrink: 0;
-    margin-bottom: 2px;
-}
-
-.swap-btn:hover {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-    background: var(--color-primary-light);
-}
-
-.swap-btn:active {
-    transform: scale(0.93);
-}
-
-.swap-btn.swapping {
-    transform: rotate(360deg);
 }
 
 /* ----- Convert Button ----- */
@@ -594,11 +591,6 @@ input.input-field::placeholder {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-.result-success {
-    background: var(--color-success-light);
-    border: 2px solid #a7f3d0;
-}
-
 .result-error {
     background: var(--color-error-light);
     border: 2px solid #fecaca;
@@ -613,63 +605,74 @@ input.input-field::placeholder {
     flex-shrink: 0;
 }
 
-.result-main {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-    flex-wrap: wrap;
-    text-align: center;
+/* ----- Conversion Results ----- */
+.conversion-results {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
 }
 
-.result-source,
-.result-target {
+@media (max-width: 640px) {
+    .conversion-results {
+        grid-template-columns: 1fr;
+    }
+}
+
+.conversion-card {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2px;
+    padding: 20px 16px;
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    animation: slideUp 0.35s ease;
 }
 
-.result-label {
-    font-size: 0.75rem;
+.conversion-card.source {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+    box-shadow: var(--shadow-md);
+}
+
+.conversion-flag {
+    font-size: 2rem;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.conversion-code {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--color-text);
+}
+
+.conversion-label {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    margin-bottom: 8px;
+}
+
+.conversion-amount {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+}
+
+.conversion-badge {
+    margin-top: 8px;
+    font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-text-muted);
-}
-
-.result-amount {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--color-text);
-}
-
-.result-highlight {
-    font-size: 1.6rem;
-    color: var(--color-success);
-}
-
-.result-arrow {
-    font-size: 1.5rem;
-    color: var(--color-text-muted);
-    transition: transform 0.3s ease;
-}
-
-.result-details {
-    margin-top: 16px;
-    text-align: center;
-    padding-top: 14px;
-    border-top: 1px solid rgba(0,0,0,0.06);
-}
-
-.result-rate {
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-}
-
-.result-rate span {
-    font-weight: 600;
-    color: var(--color-text);
+    letter-spacing: 0.05em;
+    color: var(--color-primary);
+    background: rgba(37,99,235,0.1);
+    padding: 3px 8px;
+    border-radius: 999px;
 }
 
 /* ----- Loading Spinner ----- */

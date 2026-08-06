@@ -61,51 +61,41 @@
               hx-target="#result-section"
               hx-swap="innerHTML"
               hx-indicator="#result-loading">
-            <div class="converter-inputs">
-                <!-- Amount -->
-                <div class="input-group amount-group">
-                    <label for="amount" class="input-label">Monto</label>
-                    <input type="number"
-                           id="amount"
-                           name="amount"
-                           class="input-field"
-                           placeholder="0,00"
-                           step="any"
-                           min="0"
-                           required
-                           autofocus>
-                </div>
 
-                <!-- From -->
-                <div class="input-group currency-group">
-                    <label for="from" class="input-label">De</label>
-                    <select id="from" name="from" class="input-field select-field" required>
-                        <option value="BS">Bs. — Bolívares</option>
-                        <option value="USD">$ — Dólar USD</option>
-                        <option value="EUR">€ — Euro EUR</option>
-                    </select>
-                </div>
+            <!-- Source currency radio cards -->
+            <div class="currency-radio-group" role="radiogroup" aria-label="Moneda de origen">
+                <label class="currency-radio-card selected">
+                    <input type="radio" name="from" value="BS" checked>
+                    <span class="radio-icon">&#x1F1FB;&#x1F1EA;</span>
+                    <span class="radio-code">BS</span>
+                    <span class="radio-name">Bolívares</span>
+                </label>
+                <label class="currency-radio-card">
+                    <input type="radio" name="from" value="USD">
+                    <span class="radio-icon">&#x1F1FA;&#x1F1F8;</span>
+                    <span class="radio-code">USD</span>
+                    <span class="radio-name">Dólar</span>
+                </label>
+                <label class="currency-radio-card">
+                    <input type="radio" name="from" value="EUR">
+                    <span class="radio-icon">&#x1F1EA;&#x1F1FA;</span>
+                    <span class="radio-code">EUR</span>
+                    <span class="radio-name">Euro</span>
+                </label>
+            </div>
 
-                <!-- Swap button -->
-                <button type="button" class="swap-btn" id="swap-btn"
-                        onclick="swapCurrencies()" title="Invertir monedas"
-                        aria-label="Invertir monedas">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M7 16l-4-4 4-4"/>
-                        <path d="M17 8l4 4-4 4"/>
-                        <path d="M3 12h18"/>
-                    </svg>
-                </button>
-
-                <!-- To -->
-                <div class="input-group currency-group">
-                    <label for="to" class="input-label">A</label>
-                    <select id="to" name="to" class="input-field select-field" required>
-                        <option value="USD">$ — Dólar USD</option>
-                        <option value="EUR">€ — Euro EUR</option>
-                        <option value="BS">Bs. — Bolívares</option>
-                    </select>
-                </div>
+            <!-- Amount -->
+            <div class="amount-group">
+                <label for="amount" class="input-label">Monto</label>
+                <input type="number"
+                       id="amount"
+                       name="amount"
+                       class="input-field"
+                       placeholder="0,00"
+                       step="any"
+                       min="0"
+                       required
+                       autofocus>
             </div>
 
             <button type="submit" class="convert-btn">
@@ -146,28 +136,13 @@
 </footer>
 
 <script>
-    /* Swap currencies with smooth animation */
-    function swapCurrencies() {
-        const from = document.getElementById('from');
-        const to = document.getElementById('to');
-        const swapBtn = document.getElementById('swap-btn');
-
-        // Don't swap if both are the same
-        if (from.value === to.value) return;
-
-        // Animate
-        swapBtn.classList.add('swapping');
-        setTimeout(() => swapBtn.classList.remove('swapping'), 400);
-
-        // Swap
-        const temp = from.value;
-        from.value = to.value;
-        to.value = temp;
-    }
-
-    /* Format number input with Venezuelan comma decimal */
-    document.getElementById('amount').addEventListener('input', function(e) {
-        // Allow both . and , as decimal separator
+    /* Toggle the selected state on the source currency radio cards */
+    document.querySelectorAll('.currency-radio-card input[type="radio"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.currency-radio-card').forEach(function(card) {
+                card.classList.toggle('selected', card.querySelector('input').checked);
+            });
+        });
     });
 </script>
 

@@ -12,39 +12,32 @@
     </div>
 </div>
 
-<!-- Result state -->
-<div th:if="${result != null}" id="result-section" class="result-area">
-    <div class="result-card result-success">
-        <div class="result-main">
-            <div class="result-source">
-                <span class="result-label">De</span>
-                <span class="result-amount" th:text="${formattedAmount}">Bs. 0,00</span>
-            </div>
-            <div class="result-arrow">&#x27A1;</div>
-            <div class="result-target">
-                <span class="result-label">A</span>
-                <span class="result-amount result-highlight" th:text="${formattedResult}">$ 0.00</span>
-            </div>
+<!-- Result state: conversion to all three currencies -->
+<div th:if="${sourceCurrency != null}" id="result-section" class="result-area">
+    <div class="conversion-results">
+        <!-- BS card -->
+        <div class="conversion-card" th:classappend="${sourceCurrency == 'BS'} ? 'source'">
+            <span class="conversion-flag">&#x1F1FB;&#x1F1EA;</span>
+            <span class="conversion-code">BS</span>
+            <span class="conversion-label">Bolívares</span>
+            <span class="conversion-amount" th:text="${bsFormatted}">Bs. 0,00</span>
+            <span class="conversion-badge" th:if="${sourceCurrency == 'BS'}">Seleccionaste</span>
         </div>
-        <div class="result-details">
-            <span class="result-rate" th:if="${from == 'BS' && to == 'USD'}">
-                Tasa: 1 USD = Bs. <span th:text="${#numbers.formatDecimal(rates.usdRate(), 1, 'COMMA', 4, 'POINT')}">0,00</span>
-            </span>
-            <span class="result-rate" th:if="${from == 'BS' && to == 'EUR'}">
-                Tasa: 1 EUR = Bs. <span th:text="${#numbers.formatDecimal(rates.eurRate(), 1, 'COMMA', 4, 'POINT')}">0,00</span>
-            </span>
-            <span class="result-rate" th:if="${from == 'USD' && to == 'BS'}">
-                Tasa: 1 USD = Bs. <span th:text="${#numbers.formatDecimal(rates.usdRate(), 1, 'COMMA', 4, 'POINT')}">0,00</span>
-            </span>
-            <span class="result-rate" th:if="${from == 'EUR' && to == 'BS'}">
-                Tasa: 1 EUR = Bs. <span th:text="${#numbers.formatDecimal(rates.eurRate(), 1, 'COMMA', 4, 'POINT')}">0,00</span>
-            </span>
-            <span class="result-rate" th:if="${from == 'USD' && to == 'EUR'}">
-                Tasa: 1 EUR = <span th:text="${#numbers.formatDecimal(rates.eurRate() / rates.usdRate(), 1, 'POINT', 4, 'COMMA')}">0.00</span> USD
-            </span>
-            <span class="result-rate" th:if="${from == 'EUR' && to == 'USD'}">
-                Tasa: 1 EUR = <span th:text="${#numbers.formatDecimal(rates.eurRate() / rates.usdRate(), 1, 'POINT', 4, 'COMMA')}">0.00</span> USD
-            </span>
+        <!-- USD card -->
+        <div class="conversion-card" th:classappend="${sourceCurrency == 'USD'} ? 'source'">
+            <span class="conversion-flag">&#x1F1FA;&#x1F1F8;</span>
+            <span class="conversion-code">USD</span>
+            <span class="conversion-label">Dólar</span>
+            <span class="conversion-amount" th:text="${usdFormatted}">$ 0.00</span>
+            <span class="conversion-badge" th:if="${sourceCurrency == 'USD'}">Seleccionaste</span>
+        </div>
+        <!-- EUR card -->
+        <div class="conversion-card" th:classappend="${sourceCurrency == 'EUR'} ? 'source'">
+            <span class="conversion-flag">&#x1F1EA;&#x1F1FA;</span>
+            <span class="conversion-code">EUR</span>
+            <span class="conversion-label">Euro</span>
+            <span class="conversion-amount" th:text="${eurFormatted}">€ 0.00</span>
+            <span class="conversion-badge" th:if="${sourceCurrency == 'EUR'}">Seleccionaste</span>
         </div>
     </div>
     <div id="result-loading" class="htmx-indicator loading-spinner-container">
@@ -54,7 +47,7 @@
 </div>
 
 <!-- Fallback: no result and no error -->
-<div th:if="${result == null && error == null}" id="result-section" class="result-area">
+<div th:if="${sourceCurrency == null && error == null}" id="result-section" class="result-area">
     <div class="result-placeholder">
         <svg class="placeholder-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3">
             <circle cx="11" cy="11" r="8"/>

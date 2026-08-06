@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.text.NumberFormat;
 import java.util.Locale;
-import java.util.Map;
 
 @Controller
 public class CurrencyController {
@@ -63,56 +62,43 @@ public class CurrencyController {
 
     /**
      * HTMX endpoint for currency conversion.
-     * Returns an HTML fragment with the result.
+     * Converts the amount to all three currencies and returns an HTML fragment with the results.
      */
     @PostMapping("/convert")
     public String convert(
             @RequestParam("amount") @NotNull @Min(0) Double amount,
             @RequestParam("from") @NotBlank String from,
-            @RequestParam("to") @NotBlank String to,
             Model model) {
 
         try {
             ExchangeRates rates = scraperService.fetchRates();
-            double result = calculateConversion(amount, from, to, rates);
+            double amountInBs = toBs(amount, from, rates);
 
             model.addAttribute("amount", amount);
-            model.addAttribute("from", from);
-            model.addAttribute("to", to);
-            model.addAttribute("result", result);
-            model.addAttribute("rates", rates);
+            model.addAttribute("sourceCurrency", from);
+            model.addAttribute("bsFormatted", formatCurrency(amountInBs, "BS"));
+            model.addAttribute("usdFormatted", formatCurrency(amountInBs / rates.usdRate(), "USD"));
+            model.addAttribute("eurFormatted", formatCurrency(amountInBs / rates.eurRate(), "EUR"));
             model.addAttribute("error", null);
-
-            // Format the result for display
-            model.addAttribute("formattedAmount", formatCurrency(amount, from));
-            model.addAttribute("formattedResult", formatCurrency(result, to));
 
         } catch (Exception e) {
             log.error("Error during conversion", e);
             model.addAttribute("error", "Error al realizar la conversión. Intente de nuevo.");
-            model.addAttribute("result", null);
         }
 
         return "fragments/result";
     }
 
     /**
-     * Perform the currency conversion.
+     * Convert any supported currency to bolívares.
      * BCV rates are expressed as Bs per foreign currency unit (e.g., 755.90 Bs = 1 USD).
      */
-    private double calculateConversion(double amount, String from, String to, ExchangeRates rates) {
-        double amountInBs = switch (from) {
+    private double toBs(double amount, String from, ExchangeRates rates) {
+        return switch (from) {
             case "USD" -> amount * rates.usdRate();
             case "EUR" -> amount * rates.eurRate();
             case "BS" -> amount;
             default -> throw new IllegalArgumentException("Moneda origen no soportada: " + from);
-        };
-
-        return switch (to) {
-            case "USD" -> amountInBs / rates.usdRate();
-            case "EUR" -> amountInBs / rates.eurRate();
-            case "BS" -> amountInBs;
-            default -> throw new IllegalArgumentException("Moneda destino no soportada: " + to);
         };
     }
 

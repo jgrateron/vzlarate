@@ -63,7 +63,7 @@ La imagen usa multi-stage build: compila con Maven + JDK 21 Alpine y ejecuta sol
 ## Funcionalidades
 
 - Scraping en tiempo real de las tasas USD y EUR desde [bcv.org.ve](https://www.bcv.org.ve)
-- Conversiones: Bs ↔ USD, Bs ↔ EUR, USD ↔ EUR
+- Conversor con selección de moneda de origen (Bs, USD o EUR) que muestra el equivalente en las tres divisas a la vez
 - Caché de tasas por 30 minutos
 - Interfaz responsive con HTMX (sin recarga completa de página)
 - Auto-refresh de tasas cada 5 minutos
@@ -74,7 +74,7 @@ La imagen usa multi-stage build: compila con Maven + JDK 21 Alpine y ejecuta sol
 |---|---|---|
 | `GET` | `/` | Página principal |
 | `GET` | `/fragment/rates` | Fragmento HTMX con las tasas |
-| `POST` | `/convert` | Conversión de divisas (retorna fragmento HTML) |
+| `POST` | `/convert` | Conversión a las tres divisas (retorna fragmento HTML) |
 
 Parámetros de `/convert`:
 
@@ -82,7 +82,6 @@ Parámetros de `/convert`:
 |---|---|---|
 | `amount` | `double` | Monto a convertir |
 | `from` | `string` | `BS`, `USD`, `EUR` |
-| `to` | `string` | `BS`, `USD`, `EUR` |
 
 ## Estructura del proyecto
 
