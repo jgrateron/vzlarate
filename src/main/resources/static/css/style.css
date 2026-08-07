@@ -742,6 +742,11 @@ input.input-field::placeholder {
     color: #64748b;
 }
 
+.footer-version {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
 @media (max-width: 500px) {
     .footer-content {
         flex-direction: column;

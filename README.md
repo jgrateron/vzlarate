@@ -12,7 +12,6 @@ Tasas de cambio oficiales del BCV y conversor de divisas en tiempo real.
 | Thymeleaf | 3.1 |
 | HTMX | 2.0 |
 | Jsoup | 1.18.1 |
-| Caffeine | 3.1 |
 
 ## Requisitos
 
@@ -52,9 +51,9 @@ docker run -p 8080:8080 -e PORT=8080 jgrateron/vzlarate:latest
 ### Publicar una nueva versión
 
 ```bash
-docker build -t jgrateron/vzlarate:1.0.0 .
-docker tag jgrateron/vzlarate:1.0.0 jgrateron/vzlarate:latest
-docker push jgrateron/vzlarate:1.0.0
+docker build -t jgrateron/vzlarate:1.0.3 .
+docker tag jgrateron/vzlarate:1.0.3 jgrateron/vzlarate:latest
+docker push jgrateron/vzlarate:1.0.3
 docker push jgrateron/vzlarate:latest
 ```
 
@@ -64,7 +63,7 @@ La imagen usa multi-stage build: compila con Maven + JDK 21 Alpine y ejecuta sol
 
 - Scraping en tiempo real de las tasas USD y EUR desde [bcv.org.ve](https://www.bcv.org.ve)
 - Conversor con selección de moneda de origen (Bs, USD o EUR) que muestra el equivalente en las tres divisas a la vez
-- Caché de tasas por 30 minutos
+- Refresco en background (stale-while-revalidate): las tasas se cachean 30 minutos y, al expirar, la página devuelve al instante la última tasa conocida mientras un hilo en background busca las nuevas
 - Interfaz responsive con HTMX (sin recarga completa de página)
 - Auto-refresh de tasas cada 5 minutos
 
@@ -91,7 +90,9 @@ src/
 │   ├── VzlaRateApplication.java
 │   ├── controller/CurrencyController.java
 │   ├── model/ExchangeRates.java
-│   └── service/BcvScraperService.java
+│   └── service/
+│       ├── BcvScraperService.java
+│       └── RateService.java
 ├── main/resources/
 │   ├── application.properties
 │   ├── static/css/style.css

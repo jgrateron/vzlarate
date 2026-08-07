@@ -13,7 +13,7 @@
 
     <groupId>com.vzlarate</groupId>
     <artifactId>vzlarate</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.3</version>
     <name>VzlaRate</name>
     <description>BCV Exchange Rate Viewer &amp; Currency Converter</description>
 
@@ -41,16 +41,6 @@
             <version>1.18.1</version>
         </dependency>
 
-        <!-- Caching with Caffeine -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-        </dependency>
-
         <!-- Bean Validation -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -74,6 +64,24 @@
     </dependencies>
 
     <build>
+        <resources>
+            <!-- Filtrado solo de .properties: inyecta @project.version@ desde el pom
+                 sin tocar los ${...} de Thymeleaf ni el CSS (@keyframes, etc.) -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

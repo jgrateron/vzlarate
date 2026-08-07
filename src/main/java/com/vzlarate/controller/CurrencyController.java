@@ -1,7 +1,8 @@
 package com.vzlarate.controller;
 
 import com.vzlarate.model.ExchangeRates;
-import com.vzlarate.service.BcvScraperService;
+import com.vzlarate.service.RateService;
+import org.springframework.beans.factory.annotation.Value;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,18 +22,22 @@ import java.util.Locale;
 public class CurrencyController {
 
     private static final Logger log = LoggerFactory.getLogger(CurrencyController.class);
-    private final BcvScraperService scraperService;
+    private final RateService rateService;
 
-    public CurrencyController(BcvScraperService scraperService) {
-        this.scraperService = scraperService;
+    @Value("${app.version}")
+    private String version;
+
+    public CurrencyController(RateService rateService) {
+        this.rateService = rateService;
     }
 
     @GetMapping("/")
     public String index(Model model) {
         try {
-            ExchangeRates rates = scraperService.fetchRates();
+            ExchangeRates rates = rateService.getRates();
             model.addAttribute("rates", rates);
             model.addAttribute("error", null);
+            model.addAttribute("version", version);
         } catch (Exception e) {
             log.error("Error fetching rates for index page", e);
             model.addAttribute("rates", null);
@@ -47,9 +52,9 @@ public class CurrencyController {
     @GetMapping("/fragment/rates")
     public String refreshRates(Model model) {
         try {
-            // Spring Cache with Caffeine caches the result; to force a refresh we'd need
-            // @CacheEvict, but for simplicity we rely on cache expiration (30 min by default).
-            ExchangeRates rates = scraperService.fetchRates();
+            // RateService sirve la última tasa conocida al instante y refresca en background;
+            // un refresco posterior de la página ya muestra las tasas nuevas.
+            ExchangeRates rates = rateService.getRates();
             model.addAttribute("rates", rates);
             model.addAttribute("error", null);
         } catch (Exception e) {
@@ -71,7 +76,7 @@ public class CurrencyController {
             Model model) {
 
         try {
-            ExchangeRates rates = scraperService.fetchRates();
+            ExchangeRates rates = rateService.getRates();
             double amountInBs = toBs(amount, from, rates);
 
             model.addAttribute("amount", amount);

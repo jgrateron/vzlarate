@@ -7,7 +7,6 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.net.ssl.SSLContext;
@@ -33,7 +32,6 @@ public class BcvScraperService {
     @Value("${bcv.scraper.user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36}")
     private String userAgent;
 
-    @Cacheable(value = "exchangeRates", unless = "#result == null")
     public ExchangeRates fetchRates() {
         log.info("Fetching exchange rates from BCV...");
         try {
